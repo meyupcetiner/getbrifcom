@@ -1208,3 +1208,4 @@ code { background: var(--paper); padding: 2px 6px; border-radius: 4px; font-size
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .site-header { background: rgba(255, 255, 255, .96); } }
 @media (min-width: 881px) { .header-row { min-height: 88px; } }
 .site-header .seg { background: rgba(242, 243, 239, .65); }
+.hub-guides { margin: 0 0 36px; padding-top: 0; border-top: 0; }

@@ -250,7 +250,7 @@ export function HowSteps() {
 
 // ------------------------------------------------------------------ ALAN SAYFALARI (Stüdyo / Tasarım / Dijital)
 // Hizmet listesi + kimler için + rehber fiyatlar. Admin → Örnek işler'de iş varsa Worker ızgarayı doldurur; boşken bölüm gizlenir.
-export function HubPage({ hub }: { hub: Hub; posts?: { href: string; baslik: string }[] }) {
+export function HubPage({ hub, posts = [] }: { hub: Hub; posts?: { href: string; baslik: string }[] }) {
   const first = hub.kategoriler[0];
   const groups = hub.kategoriler.map((k) => ({ cat: categoryBySlug(k), items: SERVICES.filter((x) => x.category === k) })).filter((g) => g.items.length);
   return (
@@ -333,6 +333,16 @@ export function HubPage({ hub }: { hub: Hub; posts?: { href: string; baslik: str
 
       <section className="section section-tight pf-faq" aria-labelledby="h-hub-sss">
         <div className="wrap narrow">
+          {posts.length ? (
+            <nav className="svc-guides hub-guides" aria-label="Rehberler">
+              <h2 className="h-sm">Rehberler</h2>
+              <ul>
+                {posts.map((x) => (
+                  <li key={x.href}><a href={x.href}>{x.baslik}</a></li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
           <h2 id="h-hub-sss" className="h-sm">Sık sorulanlar</h2>
           <FaqList items={hub.sss} />
         </div>

@@ -37,6 +37,7 @@ function safeEq(a: string, b: string) {
   return r === 0;
 }
 const SEC_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "same-origin",
@@ -618,7 +619,13 @@ async function blogPage(env: Env, url: URL, slug: string | null): Promise<Respon
   const shell = await blogShell(env, url);
   if (!shell) return null;
   const site = url.origin;
-  const headers = { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=0, must-revalidate", "X-Content-Type-Options": "nosniff" };
+  const headers = {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "public, max-age=0, must-revalidate",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
+    ...SEC_HEADERS,
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+  };
   if (!slug) {
     const rows = (await env.DB.prepare("SELECT slug, baslik, ozet, kapak, kapak_alt, yayin_tarihi FROM bloglar WHERE durum = 'yayinda' AND yayin_tarihi <= ? ORDER BY yayin_tarihi DESC LIMIT 100").bind(now()).all<Row>()).results;
     const main = `<section class="page-head"><div class="wrap">${crumbs([["Ana sayfa", "/"], ["Blog", "/blog"]])}<h1>Blog</h1><p class="lead">Fotoğraf, tasarım ve dijital pazarlama projelerine başlamadan önce bilmen gerekenler.</p></div></section>

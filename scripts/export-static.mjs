@@ -139,6 +139,7 @@ cpSync("fiyatlar.js", join(OUT, "fiyatlar.js"));
 
 
 writeFileSync(join(OUT, "_headers"), `/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -149,6 +150,8 @@ writeFileSync(join(OUT, "_headers"), `/*
   Cache-Control: public, max-age=31536000, immutable
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+/styles.css
+  Cache-Control: public, max-age=86400
 `);
 // Cloudflare Worker (talep API + yönetim paneli) — tek dosya, bağımlılıksız
 const pricingMap = {};

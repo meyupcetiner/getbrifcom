@@ -25,7 +25,7 @@ const HUB_POSTS: Record<string, { href: string; baslik: string }[]> = {
     { href: "/blog/e-ticaret-urun-fotografi-rehberi", baslik: "E-ticaret ürün fotoğrafı: çekimden önce hazırlık listesi" },
     { href: "/blog/tanitim-filmi-cekimi-fiyati", baslik: "Tanıtım filmi çekimi fiyatı ve süreci" },
   ],
-  tasarim: [{ href: "/blog/kurumsal-kimlik-tasarimi-sureci", baslik: "Kurumsal kimlik tasarımı süreci: neler teslim edilir?" }],
+  tasarim: [{ href: "/blog/kurumsal-kimlik-tasarimi-sureci", baslik: "Kurumsal kimlik nasıl hazırlanır? Adımlar ve teslim listesi" }],
   dijital: [{ href: "/blog/meta-reklam-yonetimi-ucreti", baslik: "Meta reklam yönetimi ücreti neye göre belirlenir?" }],
 };
 import { RequestForm, type FormProps } from "./views/components/RequestForm";
@@ -169,7 +169,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
         description: hub.description,
         path: p,
         jsonLd: [
-          ...(p === "/" ? [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, url: abs("/") }] : []),
+          ...(p === "/" ? [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, alternateName: ["Brif Platform", "getbrif"], url: abs("/") }] : []),
           serviceLd({ name: hub.ad, description: hub.cevap, path: p, area: s.service_area || "İstanbul", brand: s.brand_name }),
           faqLd(hub.sss),
         ],
@@ -182,7 +182,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
   }
   if (p === "/ana-sayfa") {
     const svcs = services({ publishedOnly: true });
-    renderPage(ctx, { title: "Brif – Fotoğraf, Tasarım ve Dijital Hizmetler", description: s.seo_default_description, path: p, jsonLd: [faqLd(generalFaq.slice(0, 5))] }, <Home s={s} cats={categories()} services={svcs} />, { scripts: ["home"], bodyClass: "page-home" });
+    renderPage(ctx, { title: "Brif – Fotoğraf, Tasarım ve Dijital Hizmetler", description: s.seo_default_description, path: p, jsonLd: [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, alternateName: ["Brif Platform", "getbrif"], url: abs("/") }, faqLd(generalFaq.slice(0, 5))] }, <Home s={s} cats={categories()} services={svcs} />, { scripts: ["home"], bodyClass: "page-home" });
     return true;
   }
   if (p === "/blog-sablon") {
@@ -224,7 +224,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
     const island = renderToString(<RequestForm {...props} />);
     renderPage(
       ctx,
-      { title: "Talep oluştur", description: "Fotoğraf, video, tasarım, web, reklam, sosyal medya veya içerik işin için ücretsiz talep oluştur. Kategori ve hizmeti seç, birkaç soruyu yanıtla, kapsamına uygun dönüş al.", path: "/talep-olustur" },
+      { title: "Talep Oluştur: Ücretsiz Teklif Al", description: "Fotoğraf, video, tasarım, web, reklam, sosyal medya veya içerik işin için ücretsiz talep oluştur. Kategori ve hizmeti seç, birkaç soruyu yanıtla, kapsamına uygun dönüş al.", path: "/talep-olustur" },
       <>
         <RequestShell islandHtml={island} s={s} />
         <script id="talep-props" type="application/json" dangerouslySetInnerHTML={{ __html: safeJson(props) }} />
@@ -238,7 +238,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
     return true;
   }
   if (p === "/fiyat-rehberi") {
-    renderPage(ctx, { title: "Fiyat rehberi: fotoğraf, video ve reklam hizmetlerinde fiyatı ne belirler?", description: "Ürün çekimi, etkinlik fotoğrafı, Reels, video kurgu, sosyal medya ve Meta reklam yönetiminde fiyatı etkileyen unsurlar ve rehber aralıklar.", path: p, breadcrumbs: [{ name: "Ana sayfa", path: "/" }, { name: "Fiyat rehberi", path: p }] }, <PriceGuidePage services={services({ publishedOnly: true })} />, { scripts: ["home"] });
+    renderPage(ctx, { title: "Fiyat Rehberi: Fotoğraf, Video, Tasarım ve Reklam", description: "Ürün çekimi, etkinlik fotoğrafı, Reels, video kurgu, sosyal medya ve Meta reklam yönetiminde fiyatı etkileyen unsurlar ve rehber aralıklar.", path: p, breadcrumbs: [{ name: "Ana sayfa", path: "/" }, { name: "Fiyat rehberi", path: p }] }, <PriceGuidePage services={services({ publishedOnly: true })} />, { scripts: ["home"] });
     return true;
   }
   if (p === "/sss") {
