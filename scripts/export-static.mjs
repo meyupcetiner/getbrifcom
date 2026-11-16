@@ -69,10 +69,11 @@ try {
   writeFileSync(join(OUT, "robots.txt"), `User-agent: *\n${block}\n${AI_BOTS.map((b) => `User-agent: ${b}\n${block}`).join("\n")}\nSitemap: ${SITE}/sitemap.xml\n`);
   writeFileSync(join(OUT, "llms.txt"), `# Brif
 
-> Brif, İstanbul merkezli fotoğraf/video prodüksiyonu, grafik tasarım ve dijital pazarlama (web sitesi, Meta ve Google reklam yönetimi, sosyal medya yönetimi) hizmetleri için talep platformudur. Müşteri ihtiyacını kısa bir formla anlatır, kapsamına ve bütçesine uygun yazılı teklif alır.
+> Brif, ihtiyacına uygun freelancer'ı bulmanı sağlayan İstanbul merkezli bir platformdur: freelance fotoğrafçı ve videograf, grafik tasarımcı, web tasarımcı, Meta/Google reklam ve sosyal medya uzmanları. Müşteri ihtiyacını kısa bir formla anlatır, kapsamına ve bütçesine uygun yazılı teklif alır.
 
 ## Alanlar
-- [Brif Stüdyo — Fotoğraf ve video](${SITE}/): ürün, katalog ve reklam fotoğrafı, tanıtım filmi, Reels, etkinlik çekimi, video kurgu
+- [Ana sayfa — İhtiyacına uygun freelancer'ı bul](${SITE}/)
+- [Brif Stüdyo — Fotoğraf ve video](${SITE}/studyo): ürün, katalog ve reklam fotoğrafı, tanıtım filmi, Reels, etkinlik çekimi, video kurgu
 - [Brif Tasarım — Grafik ve içerik](${SITE}/tasarim): logo, kurumsal kimlik, katalog, ambalaj, sosyal medya tasarımı, metin ve içerik yazımı
 - [Brif Dijital — Web, reklam ve sosyal medya](${SITE}/dijital): kurumsal web sitesi, e-ticaret, Meta ve Google reklam yönetimi, sosyal medya yönetimi
 

@@ -24,8 +24,8 @@ Canlı: https://getbrif.com — Cloudflare Workers + D1.
 - Sosyal medya **Dijital** kategorisinde. WhatsApp numarası sitede yok.
 
 ## Site yapısı
-- Üç "hub" (`src/data/hubs.ts`): `/` Brif Stüdyo (foto/video), `/tasarim` Brif Tasarım (grafik+içerik), `/dijital` Brif Dijital (web, reklam, sosyal). Hub sayfaları: başlık + "Talep oluştur" + kategoriye göre hizmet listesi + kimler için/rehber fiyatlar + SSS. Admin'de örnek iş varsa `<!--ISLER:key-->` ızgarası dolar, yoksa gizli.
-- `/ana-sayfa` genel ana sayfa (logo buraya gider): ortalanmış giriş + popüler hizmetler, 6 sade kategori kartı (`CatCards`), 3 adımlı süreç, Neden Brif, SSS. Bütçe hesaplayıcı `/fiyat-rehberi`'nde (`BudgetCalc`).
+- Üç "hub" (`src/data/hubs.ts`): `/studyo` Brif Stüdyo (foto/video), `/tasarim` Brif Tasarım (grafik+içerik), `/dijital` Brif Dijital (web, reklam, sosyal). Hub sayfaları: başlık + "Talep oluştur" + kategoriye göre hizmet listesi + kimler için/rehber fiyatlar + SSS. Admin'de örnek iş varsa `<!--ISLER:key-->` ızgarası dolar, yoksa gizli.
+- `/` genel ana sayfa, slogan **"İhtiyacına uygun Freelancer'ı bul!"** (meta başlık da bu). `/ana-sayfa` → 301 `/studyo`. SEO'da "freelancer / freelance fotoğrafçı, tasarımcı, web tasarımcı" kelimeleri hedeflenir. Ana sayfa: ortalanmış giriş + popüler hizmetler, 6 sade kategori kartı (`CatCards`), 3 adımlı süreç, Neden Brif, SSS. Bütçe hesaplayıcı `/fiyat-rehberi`'nde (`BudgetCalc`).
 - Menü: Hizmetler (mega) · Nasıl çalışır · Fiyatlar · Blog + Stüdyo/Tasarım/Dijital sekmeleri. Sade tasarım: fotoğraflı kart, kaydırma animasyonu, parlayan arka plan yok.
 - `/hizmetler` kategori kutuları, `/talep-olustur` çok adımlı form, `/blog` (worker D1'den render eder), `/fiyat-rehberi`, yasal sayfalar.
 - Admin: `/admin` (şifre: Cloudflare secret `ADMIN_PASSWORD`). Talepler, notlar, profiller, örnek işler (portfolyo), blog, medya, görsel düzenleyici (`/admin/duzenleyici`).

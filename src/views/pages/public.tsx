@@ -93,9 +93,9 @@ export function Home(_: { s: Settings; cats: Category[]; services: Service[] }) 
           <img className="hero3-ill hero3-ill-r" src="/assets/freelancer-masa-cizgi.webp" alt="" width="1000" height="1293" decoding="async" fetchPriority="high" />
         <div className="hero3-in">
           <h1 id="hero-h" className="hero3-h">
-            İhtiyacını anlat, <span className="h-line">doğru hizmete ulaş.</span>
+            İhtiyacına uygun <span className="h-line">Freelancer&apos;ı bul!</span>
           </h1>
-          <p className="hero3-lead">Fotoğraf ve video, tasarım, web sitesi ve dijital reklam işlerin için kısa bir form doldur; kapsamına ve bütçene uygun yazılı teklif al.</p>
+          <p className="hero3-lead">Fotoğrafçı, videograf, grafik tasarımcı, web tasarımcı ya da sosyal medya uzmanı mı arıyorsun? Kısa bir form doldur; işine uygun freelancer ekibinden yazılı teklif al.</p>
           <div className="hero3-actions">
             <a href="/talep-olustur" className="btn btn-primary btn-lg">Ücretsiz teklif al</a>
             <a href="#hizmetler" className="btn btn-ghost btn-lg">Hizmetlere göz at</a>
@@ -357,7 +357,7 @@ export function ServicesPage({ services }: { cats: Category[]; services: Service
   const guides = SERVICES.filter((x) => x.page && pages.has(x.page));
   return (
     <>
-      <PageHead crumbs={[{ name: "Ana sayfa", path: "/ana-sayfa" }, { name: "Hizmetler", path: "/hizmetler" }]} title="Hizmetler" lead={`6 kategoride ${SERVICES.length} hizmet. Kategoriyi seç; alt hizmeti ve detayları talep formunda birlikte belirleyelim.`} />
+      <PageHead crumbs={[{ name: "Ana sayfa", path: "/" }, { name: "Hizmetler", path: "/hizmetler" }]} title="Hizmetler" lead={`6 kategoride ${SERVICES.length} hizmet. Kategoriyi seç; alt hizmeti ve detayları talep formunda birlikte belirleyelim.`} />
       <section className="section section-tight">
         <div className="wrap">
           <CatCards />

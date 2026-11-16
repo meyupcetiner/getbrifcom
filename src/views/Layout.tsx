@@ -96,7 +96,7 @@ export function Layout({ meta, s, cats, children, scripts = [], bodyClass }: Lay
         </a>
         <header className="site-header">
           <div className="wrap header-row">
-            <a href="/ana-sayfa" className="brand" aria-label={`${s.brand_name} ana sayfa`}>
+            <a href="/" className="brand" aria-label={`${s.brand_name} ana sayfa`}>
               <Logo s={s} />
             </a>
             <nav aria-label="Ana menü" className="main-nav" id="ana-menu">
@@ -206,7 +206,7 @@ function Footer({ s, cats }: { s: Settings; cats: Category[] }) {
         <nav aria-label="Platform">
           <p className="footer-h">Platform</p>
           <ul>
-            <li><a href="/ana-sayfa">Ana sayfa</a></li>
+            <li><a href="/">Ana sayfa</a></li>
             {HUBS.map((h) => <li key={h.key}><a href={h.path}>{h.ad}</a></li>)}
             <li><a href="/blog">Blog</a></li>
             <li><a href="/hakkimizda">Hakkımızda</a></li>

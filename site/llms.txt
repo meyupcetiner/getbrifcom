@@ -1,9 +1,10 @@
 # Brif
 
-> Brif, İstanbul merkezli fotoğraf/video prodüksiyonu, grafik tasarım ve dijital pazarlama (web sitesi, Meta ve Google reklam yönetimi, sosyal medya yönetimi) hizmetleri için talep platformudur. Müşteri ihtiyacını kısa bir formla anlatır, kapsamına ve bütçesine uygun yazılı teklif alır.
+> Brif, ihtiyacına uygun freelancer'ı bulmanı sağlayan İstanbul merkezli bir platformdur: freelance fotoğrafçı ve videograf, grafik tasarımcı, web tasarımcı, Meta/Google reklam ve sosyal medya uzmanları. Müşteri ihtiyacını kısa bir formla anlatır, kapsamına ve bütçesine uygun yazılı teklif alır.
 
 ## Alanlar
-- [Brif Stüdyo — Fotoğraf ve video](https://getbrif.com/): ürün, katalog ve reklam fotoğrafı, tanıtım filmi, Reels, etkinlik çekimi, video kurgu
+- [Ana sayfa — İhtiyacına uygun freelancer'ı bul](https://getbrif.com/)
+- [Brif Stüdyo — Fotoğraf ve video](https://getbrif.com/studyo): ürün, katalog ve reklam fotoğrafı, tanıtım filmi, Reels, etkinlik çekimi, video kurgu
 - [Brif Tasarım — Grafik ve içerik](https://getbrif.com/tasarim): logo, kurumsal kimlik, katalog, ambalaj, sosyal medya tasarımı, metin ve içerik yazımı
 - [Brif Dijital — Web, reklam ve sosyal medya](https://getbrif.com/dijital): kurumsal web sitesi, e-ticaret, Meta ve Google reklam yönetimi, sosyal medya yönetimi
 

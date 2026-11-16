@@ -1217,7 +1217,7 @@ async function admin(req: Request, env: Env, url: URL): Promise<Response> {
 }
 
 // ---- Alan sayfalarının portfolyosu (Admin → Örnek işler; kategoriye göre alan)
-const HUB_PATHS: Record<string, string> = { "/": "studyo", "/tasarim": "tasarim", "/dijital": "dijital" };
+const HUB_PATHS: Record<string, string> = { "/studyo": "studyo", "/tasarim": "tasarim", "/dijital": "dijital" };
 const ALAN_KAT: Record<string, string[]> = { studyo: ["Fotoğraf", "Video"], tasarim: ["Grafik tasarım", "Metin & içerik"], dijital: ["Web tasarım", "Reklam", "Sosyal medya"] };
 const worksCache = new Map<string, { html: string; t: number }>();
 async function injectWorks(env: Env, page: string, alan: string): Promise<string> {
@@ -1250,6 +1250,8 @@ async function injectWorks(env: Env, page: string, alan: string): Promise<string
 /** Statik sayfa; yayınlanmış görsel tasarımı varsa uygulanmış hali */
 async function servePage(req: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === "/sitemap.xml") return sitemapXml(env, url);
+  // Eski adres: genel ana sayfa artık "/", Stüdyo sayfası "/studyo"
+  if (url.pathname === "/ana-sayfa" || url.pathname === "/ana-sayfa/") return new Response(null, { status: 301, headers: { Location: "/studyo" } });
   if (url.pathname === "/blog-sablon" || url.pathname === "/blog-sablon/") {
     const nf = await env.ASSETS.fetch(new Request(new URL("/404", url).toString()));
     return new Response(nf.body, { status: 404, headers: nf.headers });

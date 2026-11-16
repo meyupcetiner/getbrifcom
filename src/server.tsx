@@ -144,7 +144,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
       ["/", ""],
       ["/tasarim", ""],
       ["/dijital", ""],
-      ["/ana-sayfa", ""],
+      ["/studyo", ""],
       ["/hizmetler", ""],
       ["/talep-olustur", ""],
       ["/nasil-calisir", ""],
@@ -160,6 +160,11 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
     send(ctx, 200, xml, "application/xml; charset=utf-8", { "Cache-Control": "public, max-age=3600" });
     return true;
   }
+  if (p === "/") {
+    const svcs = services({ publishedOnly: true });
+    renderPage(ctx, { title: "İhtiyacına Uygun Freelancer'ı Bul | Brif", description: 'Fotoğrafçı, videograf, grafik tasarımcı, web tasarımcı ve sosyal medya uzmanı freelancer arıyorsan kısa formu doldur; ihtiyacına uygun yazılı teklif al.', path: p, jsonLd: [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, alternateName: ["Brif Platform", "getbrif"], url: abs("/") }, faqLd(generalFaq.slice(0, 5))] }, <Home s={s} cats={categories()} services={svcs} />, { scripts: ["home"], bodyClass: "page-home" });
+    return true;
+  }
   const hub = HUBS.find((h) => h.path === p);
   if (hub) {
     renderPage(
@@ -169,20 +174,14 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
         description: hub.description,
         path: p,
         jsonLd: [
-          ...(p === "/" ? [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, alternateName: ["Brif Platform", "getbrif"], url: abs("/") }] : []),
           serviceLd({ name: hub.ad, description: hub.cevap, path: p, area: s.service_area || "İstanbul", brand: s.brand_name }),
           faqLd(hub.sss),
         ],
-        breadcrumbs: p === "/" ? undefined : [{ name: "Ana sayfa", path: "/" }, { name: hub.ad, path: p }],
+        breadcrumbs: [{ name: "Ana sayfa", path: "/" }, { name: hub.ad, path: p }],
       },
       <HubPage hub={hub} posts={HUB_POSTS[hub.key] || []} />,
       { bodyClass: "page-hub hub-" + hub.key },
     );
-    return true;
-  }
-  if (p === "/ana-sayfa") {
-    const svcs = services({ publishedOnly: true });
-    renderPage(ctx, { title: "Brif – Fotoğraf, Tasarım ve Dijital Hizmetler", description: s.seo_default_description, path: p, jsonLd: [organizationLd(s), { "@context": "https://schema.org", "@type": "WebSite", name: s.brand_name, alternateName: ["Brif Platform", "getbrif"], url: abs("/") }, faqLd(generalFaq.slice(0, 5))] }, <Home s={s} cats={categories()} services={svcs} />, { scripts: ["home"], bodyClass: "page-home" });
     return true;
   }
   if (p === "/blog-sablon") {
@@ -191,7 +190,7 @@ async function handlePublic(ctx: Ctx): Promise<boolean> {
   }
   if (p === "/hizmetler") {
     const svcs = services({ publishedOnly: true });
-    renderPage(ctx, { title: "Hizmetler: fotoğraf, video, sosyal medya ve reklam", description: "Ürün fotoğrafçılığı, etkinlik çekimi, Reels, video kurgu, sosyal medya yönetimi ve Meta reklam yönetimi hizmetleri.", path: "/hizmetler", breadcrumbs: [{ name: "Ana sayfa", path: "/" }, { name: "Hizmetler", path: "/hizmetler" }] }, <ServicesPage cats={categories()} services={svcs} />);
+    renderPage(ctx, { title: "Freelancer Hizmetleri: Fotoğraf, Tasarım, Web ve Reklam", description: "Freelance fotoğrafçı, videograf, grafik tasarımcı, web tasarımcı ve sosyal medya uzmanı hizmetleri: 6 kategoride 45 hizmet, ücretsiz teklif.", path: "/hizmetler", breadcrumbs: [{ name: "Ana sayfa", path: "/" }, { name: "Hizmetler", path: "/hizmetler" }] }, <ServicesPage cats={categories()} services={svcs} />);
     return true;
   }
   const m = p.match(/^\/hizmetler\/([a-z0-9-]+)$/);
