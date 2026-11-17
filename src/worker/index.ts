@@ -1283,6 +1283,11 @@ async function servePage(req: Request, env: Env, url: URL): Promise<Response> {
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
+    // www.getbrif.com → getbrif.com (tek ana adres, kalıcı yönlendirme)
+    if (url.hostname.startsWith("www.")) {
+      url.hostname = url.hostname.slice(4);
+      return new Response(null, { status: 301, headers: { Location: url.toString(), "Cache-Control": "public, max-age=86400" } });
+    }
     try {
       if (url.pathname === "/api/talep" && req.method === "POST") return await createTalep(req, env, url);
       if (url.pathname === "/api/ziyaret" && req.method === "POST") {
