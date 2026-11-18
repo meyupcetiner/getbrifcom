@@ -24,9 +24,21 @@ const HUB_POSTS: Record<string, { href: string; baslik: string }[]> = {
     { href: "/blog/urun-fotografi-fiyatlari", baslik: "Ürün fotoğrafı fiyatları neye göre belirlenir?" },
     { href: "/blog/e-ticaret-urun-fotografi-rehberi", baslik: "E-ticaret ürün fotoğrafı: çekimden önce hazırlık listesi" },
     { href: "/blog/tanitim-filmi-cekimi-fiyati", baslik: "Tanıtım filmi çekimi fiyatı ve süreci" },
+    { href: "/blog/beyaz-fonda-urun-cekimi", baslik: "Beyaz fonda ürün çekimi ve dekupe rehberi" },
+    { href: "/blog/hayalet-manken-cekimi", baslik: "Hayalet manken çekimi nedir?" },
+    { href: "/hizmetler/katalog-cekimi", baslik: "Katalog çekimi" },
+    { href: "/hizmetler/giyim-urun-cekimi", baslik: "Giyim ürün çekimi: mankenli ve hayalet manken" },
+    { href: "/hizmetler/taki-urun-cekimi", baslik: "Takı ürün çekimi ve mücevher fotoğrafçılığı" },
+    { href: "/hizmetler/mobilya-fotografcisi", baslik: "Mobilya fotoğrafçısı" },
+    { href: "/hizmetler/konser-fotografcisi", baslik: "Konser fotoğrafçısı" },
   ],
   tasarim: [{ href: "/blog/kurumsal-kimlik-tasarimi-sureci", baslik: "Kurumsal kimlik nasıl hazırlanır? Adımlar ve teslim listesi" }],
-  dijital: [{ href: "/blog/meta-reklam-yonetimi-ucreti", baslik: "Meta reklam yönetimi ücreti neye göre belirlenir?" }],
+  dijital: [
+    { href: "/blog/meta-reklam-yonetimi-ucreti", baslik: "Meta reklam yönetimi ücreti neye göre belirlenir?" },
+    { href: "/blog/seo-danismani-ne-yapar", baslik: "SEO danışmanı ne yapar? Aylık SEO fiyatları" },
+    { href: "/hizmetler/seo-danismanligi", baslik: "SEO danışmanlığı ve SEO uyumlu web tasarım" },
+    { href: "/hizmetler/google-ads-yonetimi", baslik: "Google Ads yönetimi" },
+  ],
 };
 import { RequestForm, type FormProps } from "./views/components/RequestForm";
 import { CATEGORIES, SERVICES, PAGE_TO_SERVICE } from "./data/catalog";

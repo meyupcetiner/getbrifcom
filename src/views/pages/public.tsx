@@ -353,8 +353,7 @@ export function HubPage({ hub, posts = [] }: { hub: Hub; posts?: { href: string;
 
 // ------------------------------------------------------------------ HİZMETLER LİSTESİ
 export function ServicesPage({ services }: { cats: Category[]; services: Service[] }) {
-  const pages = new Set(services.map((x) => x.slug));
-  const guides = SERVICES.filter((x) => x.page && pages.has(x.page));
+  const guides = services.map((x) => ({ page: x.slug, slug: x.slug, name: x.name }));
   return (
     <>
       <PageHead crumbs={[{ name: "Ana sayfa", path: "/" }, { name: "Hizmetler", path: "/hizmetler" }]} title="Hizmetler" lead={`6 kategoride ${SERVICES.length} hizmet. Kategoriyi seç; alt hizmeti ve detayları talep formunda birlikte belirleyelim.`} />

@@ -1,5 +1,6 @@
 // Brif — Cloudflare Worker: talep API'si (D1'e kayıt) + yönetim paneli.
 // Statik sayfalar ASSETS üzerinden sunulur; yayınlanmış bir görsel tasarımı olan sayfalara Worker tasarımı uygular.
+import { sendPush, subscribe, unsubscribe, deviceCount, vapidKeys, BILDIRIM_JS, SW_JS, MANIFEST } from "./bildirim";
 import { recordHit, markAdmin, stats as ziyaretStats, oturumDetay, olayAd, alanOf, type Oturum } from "./ziyaret";
 import { CATEGORIES, STATUSES, TIMINGS, PREFS, SERVICES, categoryBySlug } from "../data/catalog";
 import { answerRows, clean, FILE_RULES, validateTalep } from "../lib/talep";
@@ -85,7 +86,7 @@ function sniff(b: Uint8Array): string | null {
 }
 
 // ------------------------------------------------------------------ talep API
-async function createTalep(req: Request, env: Env, url: URL): Promise<Response> {
+async function createTalep(req: Request, env: Env, url: URL, ctx?: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
   if (!sameOrigin(req, url)) return json({ error: "İstek kaynağı doğrulanamadı." }, 403);
   const len = Number(req.headers.get("Content-Length") || 0);
   if (len > 6_000_000) return json({ error: "Gönderim çok büyük. Dosyaları küçültüp tekrar dene." }, 413);
@@ -148,6 +149,10 @@ async function createTalep(req: Request, env: Env, url: URL): Promise<Response> 
   }
   // Eski hız sınırı kayıtlarını temizle
   await env.DB.prepare("DELETE FROM istek_sinir WHERE ts < ?").bind(Math.floor(Date.now() / 1000) - 86400).run();
+  // Yöneticinin telefonuna anlık bildirim (müşteri adı/telefonu gönderilmez)
+  const butceTxt = k.butce ? new Intl.NumberFormat("tr-TR").format(Number(k.butce)) + " TL" : k.butce_tur === "bilmiyorum" ? "bütçe belirtilmedi" : "bütçe yok";
+  const push = sendPush(env.DB, { title: "Yeni talep: " + k.hizmet_ad, body: `${k.kategori_ad} · ${butceTxt}${k.butce_dusuk ? " (rehberin altında)" : ""} · ${ref}`, url: "/admin/talep/" + id, tag: "talep-" + id }).catch(() => undefined);
+  if (ctx) ctx.waitUntil(push); else await push;
   return json({ ok: true, ref }, 201);
 }
 
@@ -179,7 +184,7 @@ const prefLabel = (v: string) => PREFS.find((p) => p.value === v)?.label ?? v;
 
 function layout(title: string, body: string, authed = true) {
   return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
-<title>${h(title)} — Brif yönetim</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/fonts/brand.css"><link rel="stylesheet" href="/styles.css"></head>
+<title>${h(title)} — Brif yönetim</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/admin/manifest.webmanifest"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brif"><meta name="theme-color" content="#191919"><link rel="stylesheet" href="/assets/fonts/brand.css"><link rel="stylesheet" href="/styles.css"></head>
 <body class="adm">${
     authed
       ? `<div class="adm-shell"><aside class="adm-side"><div class="adm-brand"><a href="/admin">Brif</a></div>
@@ -583,7 +588,18 @@ async function ensureBlogSeed(env: Env) {
   try {
     await env.DB.prepare("CREATE TABLE IF NOT EXISTS kurulum (anahtar TEXT PRIMARY KEY, created_at TEXT NOT NULL)").run();
     const done = await env.DB.prepare("SELECT anahtar FROM kurulum WHERE anahtar = 'blog-v1'").first<Row>();
-    if (done) return;
+    if (done) {
+      // v2: sonradan eklenen tohum yazılarını bir kez ekle (var olanlara dokunmaz)
+      const v2 = await env.DB.prepare("SELECT anahtar FROM kurulum WHERE anahtar = 'blog-v2'").first<Row>();
+      if (v2) return;
+      const d2 = now();
+      for (const p of (BLOG_SEED as Row[]).slice(5)) {
+        await env.DB.prepare("INSERT OR IGNORE INTO bloglar (slug, baslik, ozet, icerik, kapak, kapak_alt, hub, ilgili, durum, yayin_tarihi, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
+          .bind(p.slug, p.baslik, p.ozet, p.icerik, p.kapak, p.kapak_alt, p.hub, p.ilgili, "yayinda", d2, d2, d2).run();
+      }
+      await env.DB.prepare("INSERT OR IGNORE INTO kurulum (anahtar, created_at) VALUES ('blog-v2', ?)").bind(d2).run();
+      return;
+    }
     const days = [0, -2, -4, -6, -8];
     for (const [i, p] of (BLOG_SEED as Row[]).entries()) {
       const d = new Date(Date.UTC(2026, 10, 7 + (days[i] ?? -10), 6)).toISOString();
@@ -993,6 +1009,7 @@ ${digerleri.length ? `<h3 class="h-xs vsub">Aynı gün diğer ziyaretleri</h3><u
 
 async function ozetView(env: Env) {
   const s = await ziyaretStats(env.DB, 7);
+  const cihaz = await deviceCount(env.DB);
   const since = (d: number) => new Date(Date.now() - d * 864e5).toISOString();
   const cnt = async (q: string, ...a: unknown[]) => (await env.DB.prepare(q).bind(...a).first<{ n: number }>())?.n ?? 0;
   const t1 = await cnt("SELECT COUNT(*) AS n FROM talepler WHERE created_at > ?", since(1));
@@ -1013,7 +1030,10 @@ async function ozetView(env: Env) {
         ? `<ul class="olist">${son.map((r) => `<li><a href="/admin/talep/${r.id}"><strong>${h(r.hizmet_ad)}</strong><span class="muted small">${h(r.ref)} · ${h(r.ad || "")} · ${fmtDT(r.created_at)}</span></a>${badge(r.durum)}</li>`).join("")}</ul>`
         : `<p class="muted small">Henüz talep yok.</p>`
     }</section>
-<section class="panel"><h2 class="h-sm">Kategoriye göre talep (30 gün)</h2>${barList(kat.map((x) => [x.k || "—", x.n] as [string, number]), t30)}<h2 class="h-sm" style="margin-top:20px">Ziyaretçi kaynağı (7 gün)</h2>${barList(s.sources.slice(0, 5), s.visits)}</section></div>`,
+<section class="panel"><h2 class="h-sm">Kategoriye göre talep (30 gün)</h2>${barList(kat.map((x) => [x.k || "—", x.n] as [string, number]), t30)}<h2 class="h-sm" style="margin-top:20px">Ziyaretçi kaynağı (7 gün)</h2>${barList(s.sources.slice(0, 5), s.visits)}</section></div>
+<section class="panel" id="bildirim"><h2 class="h-sm">Telefon bildirimi</h2><p class="small muted">Yeni talep gelince bu cihaza anlık bildirim gelir (müşteri adı ve telefonu bildirimde yer almaz). Kayıtlı cihaz: ${nf(cihaz)}. iPhone'da önce bu sayfayı Safari'de açıp <strong>Paylaş → Ana Ekrana Ekle</strong> de, ana ekrandaki Brif simgesinden giriş yapıp butona bas.</p>
+<p data-durum class="small">Kontrol ediliyor…</p><div class="row-gap"><button type="button" class="btn btn-primary btn-sm" data-ac>Bu cihazda bildirimleri aç</button> <button type="button" class="btn btn-ghost btn-sm" data-test hidden>Test bildirimi gönder</button> <button type="button" class="btn btn-ghost btn-sm" data-kapat hidden>Kapat</button></div></section>
+<script src="/admin/bildirim.js" defer></script>`,
   );
 }
 
@@ -1021,6 +1041,9 @@ async function ozetView(env: Env) {
 async function admin(req: Request, env: Env, url: URL): Promise<Response> {
   const p = url.pathname.replace(/\/+$/, "") || "/admin";
   if (!env.ADMIN_PASSWORD) return html(loginView("", true), 503);
+  // Bildirim altyapısı (zararsız statik dosyalar; oturum gerekmez)
+  if (p === "/admin/sw.js") return new Response(SW_JS, { headers: { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "no-cache", "Service-Worker-Allowed": "/admin/", ...SEC_HEADERS } });
+  if (p === "/admin/manifest.webmanifest") return new Response(MANIFEST, { headers: { "Content-Type": "application/manifest+json; charset=utf-8", ...SEC_HEADERS } });
 
   if (p === "/admin/giris" && req.method === "POST") {
     if (!sameOrigin(req, url)) return html(loginView("İstek kaynağı doğrulanamadı."), 403);
@@ -1036,6 +1059,18 @@ async function admin(req: Request, env: Env, url: URL): Promise<Response> {
 
   if (p === "/admin/cikis" && req.method === "POST") return redirect("/admin", { "Set-Cookie": `${COOKIE}=; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=0` });
   await markAdmin(req, env.DB);
+  if (p === "/admin/bildirim.js") return new Response(BILDIRIM_JS, { headers: { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "no-cache", ...SEC_HEADERS } });
+  if (p === "/admin/bildirim/anahtar") return json({ key: (await vapidKeys(env.DB)).pub });
+  if (p.startsWith("/admin/bildirim/") && req.method === "POST") {
+    if (!sameOrigin(req, url)) return json({ error: "İstek kaynağı doğrulanamadı." }, 403);
+    if (p === "/admin/bildirim/test") return json(await sendPush(env.DB, { title: "Brif", body: "Bildirimler çalışıyor. Yeni talepler bu şekilde gelecek.", url: "/admin/ozet", tag: "test" }));
+    const raw = await req.text();
+    if (raw.length > 4096) return json({ error: "Çok büyük." }, 413);
+    let d: any = {};
+    try { d = JSON.parse(raw); } catch { return json({ error: "Geçersiz istek." }, 400); }
+    if (p === "/admin/bildirim/kaydet") return json({ ok: await subscribe(env.DB, d.sub || {}, String(d.ad || "")) });
+    if (p === "/admin/bildirim/sil") { await unsubscribe(env.DB, String(d.ep || "")); return json({ ok: true }); }
+  }
   if (p === "/admin/ozet") return html(await ozetView(env));
   if (p === "/admin/ziyaretciler") return html(await ziyaretView(env, url));
   if (p === "/admin/ziyaretciler/ziyaret") return html(await ziyaretDetayView(env, url));
@@ -1281,7 +1316,7 @@ async function servePage(req: Request, env: Env, url: URL): Promise<Response> {
 }
 
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env, ctx?: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
     const url = new URL(req.url);
     // www.getbrif.com → getbrif.com (tek ana adres, kalıcı yönlendirme)
     if (url.hostname.startsWith("www.")) {
@@ -1289,7 +1324,7 @@ export default {
       return new Response(null, { status: 301, headers: { Location: url.toString(), "Cache-Control": "public, max-age=86400" } });
     }
     try {
-      if (url.pathname === "/api/talep" && req.method === "POST") return await createTalep(req, env, url);
+      if (url.pathname === "/api/talep" && req.method === "POST") return await createTalep(req, env, url, ctx);
       if (url.pathname === "/api/ziyaret" && req.method === "POST") {
         try { await recordHit(req, env.DB); } catch (e) { console.error("ziyaret", (e as Error).message); }
         return new Response(null, { status: 204 });
