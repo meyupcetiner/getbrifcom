@@ -1345,6 +1345,8 @@ export default {
         }
         return r;
       }
+      // Site sahibi başka bir tarayıcısını sayımdan çıkarmak için: getbrif.com/?haric=1
+      if (url.searchParams.has("haric")) return new Response(null, { status: 302, headers: { Location: url.pathname, "Set-Cookie": "brif_ben=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax", "Cache-Control": "no-store" } });
       return await servePage(req, env, url);
     } catch (e) {
       console.error("worker hata", (e as Error).message);
