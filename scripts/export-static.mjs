@@ -29,6 +29,11 @@ patch("gizlilik-politikasi", /Sitenin hangi sayfalarının[\s\S]*?bulunmaz\.\n\n
 patch("kvkk-aydinlatma-metni", "- **Talep bilgileri:** Seçtiğin hizmet, işin detayları, bütçe ve zamanlama tercihi", "- **Talep bilgileri:** Seçtiğin kategori ve hizmet, işin detayları, bütçe ve zamanlama tercihi, isteğe bağlı olarak eklediğin referans dosyaları\n- **İletişim izni:** Kampanya ve bilgilendirme iletileri için verdiğin isteğe bağlı izin (verdiysen)");
 patch("kvkk-aydinlatma-metni", "Pazarlama iletisi gönderilmez; gönderilecekse ayrıca açık rıza alınır.", "Kampanya ve bilgilendirme iletileri yalnızca formda bu seçeneği ayrıca işaretlediysen gönderilir; bu izni istediğin zaman geri alabilirsin.");
 patch("kvkk-aydinlatma-metni", "[Sağlayıcıların adı ve bulunduğu ülke — yurt dışı aktarım varsa KVKK m.9 kapsamındaki dayanak — buraya eklenmelidir.]", "Talep kayıtları ve eklenen dosyalar, barındırma ve veritabanı hizmeti alınan Cloudflare, Inc. (ABD) altyapısında saklanır. [Yurt dışına aktarımın KVKK m.9 kapsamındaki dayanağı hukuk danışmanıyla netleştirilip buraya eklenmelidir.]");
+// İşletme bilgileri (vergi levhası): yasal metinlerdeki yer tutucular doldurulur, taslak notu kalkar
+patch("kvkk-aydinlatma-metni", "[Veri sorumlusunun ticari unvanı / adı, adresi ve iletişim bilgisi buraya eklenmelidir.]", 'Muhammed Eyüp Çetiner (şahıs işletmesi). Brif (getbrif.com) bu işletmenin markasıdır. Adres: Ali Kuşçu Mah. Darüşşafaka Cad. No:46 D:4 Fatih / İstanbul. Vergi dairesi / no: Fatih V.D. · 11201516108.');
+patch("kvkk-aydinlatma-metni", "[Yurt dışına aktarımın KVKK m.9 kapsamındaki dayanağı hukuk danışmanıyla netleştirilip buraya eklenmelidir.]", 'Cloudflare sunucuları yurt dışında bulunduğundan bu saklama, KVKK m.9 kapsamında yurt dışına aktarım niteliğindedir; Cloudflare kendi veri işleme sözleşmesi ve güvenlik önlemleri çerçevesinde verileri yalnızca hizmeti sunmak için işler.');
+patch("kvkk-aydinlatma-metni", "[iletişim adresi] üzerinden iletebilirsin", "yukarıdaki posta adresine yazılı olarak iletebilirsin");
+db.prepare("UPDATE pages SET reviewed = 1 WHERE is_legal = 1").run();
 // Fiyat rehberi: statik sitede rakamlar gösterilir; kaynağı fiyatlar.js (yeniden derlemeden düzenlenebilir)
 for (const r of db.prepare("SELECT id, pricing FROM services").all()) {
   const p = JSON.parse(r.pricing);

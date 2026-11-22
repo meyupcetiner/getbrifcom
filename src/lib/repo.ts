@@ -162,7 +162,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ga4_id: "",
   gsc_verification: "",
   notify_email: "",
-  legal_entity: "",
+  legal_entity: "Brif · Muhammed Eyüp Çetiner (şahıs işletmesi) · Fatih V.D. 11201516108",
   service_area: "İstanbul ve uzaktan yürütülebilen işler için Türkiye geneli",
   retention_days: "730",
 };
