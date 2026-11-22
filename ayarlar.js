@@ -3,7 +3,7 @@ window.SITE_AYAR = {
   // Talep formunun gönderileceği WhatsApp numarası (ör. "0532 123 45 67"). Boşsa WhatsApp butonu görünmez.
   whatsapp: "",
   // Taleplerin gönderileceği e-posta adresi. Boşsa e-posta butonu görünmez.
-  email: "",
+  email: "m.eyupcetiner@gmail.com",
   // Google Analytics 4 ölçüm kimliği (ör. "G-ABC123"). Yalnızca ziyaretçi çerez onayı verirse yüklenir.
   ga: "",
   // Logo dosyası (ör. "/logo.svg"). Boşsa yazı logosu kullanılır.
