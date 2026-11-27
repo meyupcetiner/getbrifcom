@@ -228,7 +228,7 @@ function Footer({ s, cats }: { s: Settings; cats: Category[] }) {
         </div>
       </div>
       <div className="wrap footer-legal">
-        <p>© {year} {s.legal_entity || s.brand_name}</p>
+        <p>© {year} {s.legal_entity || s.brand_name} <span className="credit">· Web site tasarım: <a href="https://meyupcetiner.com/" rel="noopener">meyupcetiner.com</a></span></p>
         <ul>
           <li><a href="/kvkk-aydinlatma-metni">KVKK aydınlatma metni</a></li>
           <li><a href="/gizlilik-politikasi">Gizlilik</a></li>
